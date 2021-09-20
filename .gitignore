@@ -1,0 +1,7 @@
+__pycache__
+.ipynb_
+ipynb_
+*.ipynb_*
+model/rnn_attention.py
+model/encode_decode_transformer.py
+extra-char-language-model-transformer.ipynb
