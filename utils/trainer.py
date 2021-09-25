@@ -10,6 +10,8 @@ from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data.dataloader import DataLoader
 from torch.nn.utils.rnn import pad_sequence
 
+from utils.utils import pickle
+
 logger = logging.getLogger(__name__)
 
 
@@ -20,13 +22,13 @@ class TrainerConfig:
     betas = (0.9, 0.95)
     grad_norm_clip = 1.0
     weight_decay = 0.1 # only applied on matmul weights
-    print_result_n_iter = 1000 # print every n iter
+    ckpt_n_print_iter = 1000 # print every n iter
     # learning rate decay params: linear warmup followed by cosine decay to 10% of original
     lr_decay = False
     warmup_tokens = 375e6 # these two numbers come from the GPT-3 paper, but may not be good defaults elsewhere
 #     final_tokens = 260e9 # (at what point we reach 10% of original LR)
     # checkpoint settings
-    ckpt_path = 'model.net'
+    ckpt_path = None
     num_workers = 0 # for DataLoader
     # device = 'cpu'
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -72,10 +74,7 @@ class Trainer:
 
             final_token = len(loader)*config.batch_size
             loss_smooth = 0
-            
-            
-            
-#             accuracy = 0
+            min_loss = 1e10
             pbar = tqdm(enumerate(loader), total=len(loader)) if is_train else enumerate(loader)
             for it, (x,y) in pbar:
                 x,y = x.to(self.device), y.to(self.device)
@@ -115,8 +114,14 @@ class Trainer:
                     logger.info("test loss: %f", test_loss)
                     return test_loss
 
-                if it % config.print_result_n_iter == 0:
-                    print(model.generate_output('', data, top_k=5, temperature=0.5))
+                if it % config.ckpt_n_print_iter == 0:
+                    print(model.generate_output(' ', data, top_k=5, temperature=0.5))
+                    if config.ckpt_path is not None:
+                        if loss.item() < min_loss:
+                            min_loss = loss.item()
+                            pickle(config.ckpt_path, model.state_dict()) # save
+
+
                         
         best_loss = float('inf')
         self.tokens = 0
@@ -124,10 +129,3 @@ class Trainer:
             run_epoch('train')
             if self.test_dataset is not None:
                 test_loss = run_epoch('test')
-
-# logits = torch.argmax(logits,axis=-1)
-# for i in range(config.batch_size):
-#     a ='x: '+''.join([data.i2ch[idx]for idx in x[i].detach().cpu().numpy().astype('int')])
-#     b ='y: '+''.join([data.i2ch[idx]for idx in y[i].detach().cpu().numpy().astype('int')])
-#     c = 'predicted: '+''.join([data.i2ch[idx]for idx in logits[i].detach().cpu().numpy().astype('int')])
-#     print(a,"\n",b,"\n",c,"\n\n\n")
