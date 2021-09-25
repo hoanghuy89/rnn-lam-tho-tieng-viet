@@ -1,4 +1,12 @@
-# Language modeling with RNN and transformer on vietnamese data
+# Language modeling with RNN and Transformer on vietnamese data
+**LSTM**
+
+<img src='images/General-scheme-of-an-Long-Short-Term-Memory-neural-networks-LSTM-for-L-p-The.ppm' width=600>
+
+**Self attention of Transformer**
+
+<img src='images/The-scaled-dot-product-attention-and-multi-head-self-attention.png' width=600>
+
 I made a crawler to download all literature from download.vn and compile it into single txt file. The data is for research purpose and not to be distributed.
 All copyrights of data belongs to their respective owners.
 
