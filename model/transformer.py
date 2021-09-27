@@ -58,12 +58,10 @@ class SelfAttention(nn.Module):
         k = self.key(k).view(batch_size, sequence_len, n_head, dk).transpose(1,2)
         v = self.value(v).view(batch_size, sequence_len, n_head, dk).transpose(1,2)
         
-        
         # scale q and k
         
         att = (q @ k.transpose(-2,-1))/(dk**0.5) # B,nh,T,dk x B,nh,dk,T -> B,nh,T,T
         if pad_mask is not None:
-            # print(pad_mask.shape)
             att = att.masked_fill(pad_mask==0, float('-1e10'))
         if causal is not None:
             att = att.masked_fill(self.causal_mask == 0, float('-1e10'))
