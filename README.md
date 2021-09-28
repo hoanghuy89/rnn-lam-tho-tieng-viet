@@ -1,4 +1,4 @@
-# Language modeling with RNN and Transformer, bonus vietnamese data
+# Language modeling with RNN and Transformer on vietnamese data
 **LSTM**
 
 <img src='images/General-scheme-of-an-Long-Short-Term-Memory-neural-networks-LSTM-for-L-p-The.ppm' width=600>
