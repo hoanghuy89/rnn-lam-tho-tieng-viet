@@ -165,7 +165,7 @@ class Transformer(nn.Module):
 
             idx = [dataset.ch2i[k] for k in sample]
             if len(idx) > dataset.sequence_len:
-                idx = idx[:sequence_len]
+                idx = idx[:dataset.sequence_len]
             else:
                 idx = [0]*(dataset.sequence_len-len(idx)) + idx
 
